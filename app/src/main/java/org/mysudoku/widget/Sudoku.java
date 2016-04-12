@@ -406,6 +406,9 @@ public class Sudoku extends View {
                 }
                 switch (currentState) {
                     case STATE_NONE:
+                        if (isLevelData(i, j)) {
+                            break;
+                        }
                         if (numberPickDialog == null) {
                             numberPickDialog = new NumberPickDialog(getContext());
                         }

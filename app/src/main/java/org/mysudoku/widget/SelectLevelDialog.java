@@ -12,6 +12,7 @@ import android.widget.NumberPicker;
 import org.mysudoku.R;
 import org.mysudoku.activity.BaseActivity;
 import org.mysudoku.activity.GameActivity;
+import org.mysudoku.activity.RankListActivity;
 import org.mysudoku.app.SudokuApp;
 
 /**
@@ -49,7 +50,7 @@ public class SelectLevelDialog extends AlertDialog implements View.OnClickListen
                 level = numberPicker.getValue();
                 if (activity instanceof GameActivity) {
                     ((GameActivity) activity).setCurrentLevel(level);
-                } else {
+                } else if (!(activity instanceof RankListActivity)) {
                     Intent intent = new Intent(activity, GameActivity.class);
                     intent.putExtra(GameActivity.KEY_LEVEL, level);
                     activity.startActivity(intent);
@@ -57,6 +58,7 @@ public class SelectLevelDialog extends AlertDialog implements View.OnClickListen
                 if (listener != null) {
                     listener.onLevelSelected(level);
                 }
+                dismiss();
                 break;
         }
     }
