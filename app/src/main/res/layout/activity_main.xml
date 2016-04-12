@@ -4,33 +4,54 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="@dimen/activity_vertical_margin"
-    android:weightSum="3">
+    android:padding="@dimen/activity_vertical_margin">
 
-    <TextView
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="SUDOKU"
-        android:textSize="40sp" />
+        android:contentDescription="@string/app_name"
+        android:src="@mipmap/sudoku" />
+
+    <TextView
+        android:id="@+id/tv_welcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="startGame"
-        android:text="开始游戏" />
+        android:text="@string/start_game" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="exitGame"
-        android:text="退出游戏" />
+        android:onClick="selectLevel"
+        android:text="@string/select_level" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="enterName"
+        android:text="@string/enter_name" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="rankList"
+        android:text="@string/rank_list" />
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="aboutMe"
-        android:text="关于我" />
+        android:text="@string/about" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="exitGame"
+        android:text="@string/exit_game" />
 
 
 </LinearLayout>

@@ -1,4 +1,4 @@
-package org.mysudoku;
+package org.mysudoku.widget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +13,13 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
 
-public class Sudoku extends View implements DialogInterface.OnClickListener {
+import org.mysudoku.app.SudokuApp;
+import org.mysudoku.callback.LevelPassedListener;
+import org.mysudoku.callback.StateChangedListener;
+import org.mysudoku.util.Utils;
+
+public class Sudoku extends View {
     /**
      * 存放每个位置上的数字的字符串数组
      */
@@ -77,9 +81,10 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
     /**
      * 游戏的运行状态
      */
-    private final int GAME_STATE_RUNNING = 0;
-    private final int GAME_STATE_WIN = 1;
-    private int gameState;
+    public static final int GAME_STATE_RUNNING = 0x10000000;
+    public static final int GAME_STATE_WIN = 0x10000001;
+    public static final int GAME_STATE_PAUSE = 0x10000002;
+    private int gameState = GAME_STATE_PAUSE;
 
     /**
      * 使用这个View的Activity的Context
@@ -88,10 +93,12 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
     private Context context;
 
     /**
-     * 当前关卡
+     * 当前关卡，表示在Levels数组中当前关卡的位置，所以从0开始
      */
     private int currentLevel = 0;
     private StateChangedListener stateChangedListener;
+    private LevelPassedListener levelPassedListener;
+    private NumberPickDialog numberPickDialog;
 
     /**
      * 设置当前的state的方法
@@ -102,7 +109,7 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
         if (currentState >= 0 && currentState <= 10) {
             this.currentState = currentState;
             if (stateChangedListener != null) {
-                stateChangedListener.onStateChanged(currentState);
+                stateChangedListener.onStateChanged(currentState, StateChangedListener.Type.ENTER_STATE);
             }
         } else {
             throw new RuntimeException("传入的currentState值必须在指定范围内！(0~10)传入的值为 "
@@ -155,16 +162,12 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
         mPaintTextRed.setStyle(Paint.Style.STROKE);
         mPaintTextRed.setColor(Color.RED);
 
-        // 顺便在这里初始化一下numText，初始化为""空字符。
+        // 初始化一下numText，初始化为""空字符。
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 numText[i][j] = "";
             }
         }
-        // 初始化gameState
-        gameState = GAME_STATE_RUNNING;
-
-        loadGameLevel(currentLevel);
     }
 
     @Override
@@ -215,11 +218,11 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
                 if (isLevelData(i, j)) {
                     canvas.drawText(numText[i][j],
                             blockWidth * i + padding, blockWidth
-                                    * (j + 1) - padding, mPaintTextRed);
+                                    * (j + 1) - padding, mPaintTextBlack);
                 } else {
                     canvas.drawText(numText[i][j],
                             blockWidth * i + padding, blockWidth
-                                    * (j + 1) - padding, mPaintTextBlack);
+                                    * (j + 1) - padding, mPaintTextRed);
                 }
             }
         }
@@ -240,7 +243,6 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
         // 判断如果该位置在unChangableList中存在则不可修改
         if (isLevelData(xPos, yPos)) {
             System.out.println("关卡数据不可修改");
-            //Toast.makeText(context, "关卡数据不可修改", Toast.LENGTH_SHORT).show();
             return;
         }
         numText[xPos][yPos] = text;
@@ -264,7 +266,7 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
             return;
             // else就是不为空，然后在判断重复
         } else if (isRepeat(xPos, yPos)) {
-            Toast.makeText(context, "有重复，请检查", Toast.LENGTH_SHORT).show();
+            Utils.showToast("有重复，请检查");
             setTextInPosition(xPos, yPos, "");
             // 没有重复也不为空，那么这个数字就被填进去了，这时还要判断是否已经填满，若填满则游戏结束
         } else {
@@ -281,28 +283,23 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
             }
             //然后再判断gameState的状态
             if (gameState == GAME_STATE_WIN) {
-                // TODO 游戏过关了，弹出一个对话框下一关，或者返回主菜单，等。
-
+                setGameState(GAME_STATE_WIN);
                 // 这个地方就简单点，弹出Toast提示过关并载入下一关
-                Toast.makeText(context,
-                        "Congratulations! You win the game!过关！~",
-                        Toast.LENGTH_LONG).show();
-                if (currentLevel == Level.getLevelNum() - 1) {
-                    // gameOver，完成了所有关卡，
-                    Toast.makeText(context, "You passed all levels!通关~",
-                            Toast.LENGTH_LONG).show();
-                    new AlertDialog.Builder(getContext())
-                            .setTitle("恭喜通关")
-                            .setNegativeButton("确定", this)
-                            .show();
-                } else {
-                    new AlertDialog.Builder(getContext())
-                            .setTitle("恭喜过关")
-                            .setMessage("是否进入下一关？")
-                            .setPositiveButton("是", this)
-                            .setNegativeButton("否", this)
-                            .show();
-                }
+                Utils.showToast("Congratulations! You win the game!过关！~");
+                levelPassed();
+            }
+        }
+    }
+
+    /**
+     * 将本关数据保存到排行榜数据库
+     */
+    private void levelPassed() {
+        if (levelPassedListener != null) {
+            if (currentLevel == SudokuApp.levels.getLevelNum() - 1) {
+                levelPassedListener.levelPassed(LevelPassedListener.STATE_GAME_OVER);
+            } else {
+                levelPassedListener.levelPassed(LevelPassedListener.STATE_NEXT_LEVEL);
             }
         }
     }
@@ -346,9 +343,9 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
      *
      * @param level
      */
-    public void loadGameLevel(int level) {
-        currentLevel = level;
-        this.numText = Level.getLevel(level);
+    private void loadGameLevel(int level) {
+        currentLevel = level - 1;
+        this.numText = SudokuApp.levels.getLevel(currentLevel);
         unChangeableList = new ArrayList<>();
         for (int i = 0; i < numText.length; i++) {
             for (int j = 0; j < numText[i].length; j++) {
@@ -357,6 +354,7 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
                 }
             }
         }
+        setGameState(GAME_STATE_RUNNING);
         invalidate();
     }
 
@@ -366,7 +364,16 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
      * @param level
      */
     public void setCurrentLevel(int level) {
-        currentLevel = level;
+        currentLevel = level - 1;
+        loadGameLevel(level);
+    }
+
+    public void restartLevel() {
+        loadGameLevel(currentLevel);
+    }
+
+    public int getCurrentLevel() {
+        return currentLevel + 1;
     }
 
     @Override
@@ -399,13 +406,16 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
                 }
                 switch (currentState) {
                     case STATE_NONE:
-                        new AlertDialog.Builder(context).setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+                        if (numberPickDialog == null) {
+                            numberPickDialog = new NumberPickDialog(getContext());
+                        }
+                        numberPickDialog.setOnNumberSelectedListener(new NumberPickDialog.OnNumberSelectedListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                setTextInPosition(i, j, items[which]);
-                                dialog.dismiss();
+                            public void onNumberSelected(int number) {
+                                setTextInPosition(i, j, number + "");
                             }
-                        }).show();
+                        });
+                        numberPickDialog.show();
                         break;
                     case STATE_1:
                     case STATE_2:
@@ -435,18 +445,14 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
         this.stateChangedListener = stateChangedListener;
     }
 
-    @Override
-    public void onClick(DialogInterface dialog, int which) {
-        switch (which) {
-            case DialogInterface.BUTTON_POSITIVE:
-                loadGameLevel(currentLevel + 1);
-                gameState = GAME_STATE_RUNNING;
-                break;
-            case DialogInterface.BUTTON_NEGATIVE:
-                ((Activity) getContext()).finish();
-                break;
-            default:
-                break;
+    public void setGameState(int gameState) {
+        this.gameState = gameState;
+        if (stateChangedListener != null) {
+            stateChangedListener.onStateChanged(gameState, StateChangedListener.Type.GAME_STATE);
         }
+    }
+
+    public void setLevelPassedListener(LevelPassedListener levelPassedListener) {
+        this.levelPassedListener = levelPassedListener;
     }
 }
