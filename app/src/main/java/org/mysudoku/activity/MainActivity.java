@@ -117,6 +117,6 @@ public class MainActivity extends BaseActivity implements DialogInterface.OnClic
 
     @Override
     public void onNameSet(String name) {
-        setTitle(name + "  欢迎！");
+        welcome.setText(SudokuApp.getUserName() + " 欢迎！");
     }
 }
