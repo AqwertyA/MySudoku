@@ -20,10 +20,7 @@ import org.w3c.dom.Text;
  * @author V
  */
 public class MainActivity extends BaseActivity implements DialogInterface.OnClickListener, SelectLevelDialog.LevelSelectedListener, EnterUserNameDialog.OnNameSetListener {
-    /**
-     * 退出的Dialog对话框
-     */
-    private AlertDialog exitDialog;
+
     private TextView welcome;
 
     @Override
@@ -53,14 +50,10 @@ public class MainActivity extends BaseActivity implements DialogInterface.OnClic
     }
 
     public void exitGame(View v) {
-        if (exitDialog == null) {
-            exitDialog = new AlertDialog.Builder(this)
-                    .setMessage("确定要退出吗？")
-                    .setPositiveButton("是的", this)
-                    .setNegativeButton("并不是", this).create();
-        }
-        exitDialog.show();
+        showExitDialog(this);
     }
+
+
 
     public void aboutMe(View v) {
         startActivity(new Intent(this, AboutActivity.class));
@@ -84,13 +77,7 @@ public class MainActivity extends BaseActivity implements DialogInterface.OnClic
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (exitDialog == null) {
-                exitDialog = new AlertDialog.Builder(this)
-                        .setMessage("确定要退出吗？")
-                        .setPositiveButton("是的", this)
-                        .setNegativeButton("并不是", this).create();
-            }
-            exitDialog.show();
+            showExitDialog(this);
             return true;
         }
         return super.onKeyDown(keyCode, event);

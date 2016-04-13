@@ -1,6 +1,8 @@
 package org.mysudoku.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import org.mysudoku.widget.EnterUserNameDialog;
@@ -10,7 +12,10 @@ import org.mysudoku.widget.SelectLevelDialog;
  * @author V
  */
 public abstract class BaseActivity extends Activity {
-
+    /**
+     * 退出的Dialog对话框
+     */
+    private AlertDialog exitDialog;
     private SelectLevelDialog selectLevelDialog;
     private EnterUserNameDialog enterUserNameDialog;
 
@@ -51,6 +56,16 @@ public abstract class BaseActivity extends Activity {
         }
         enterUserNameDialog.show();
         return enterUserNameDialog;
+    }
+
+    protected void showExitDialog(DialogInterface.OnClickListener listener) {
+        if (exitDialog == null) {
+            exitDialog = new AlertDialog.Builder(this)
+                    .setMessage("确定要退出吗？")
+                    .setPositiveButton("是的", listener)
+                    .setNegativeButton("并不是", listener).create();
+        }
+        exitDialog.show();
     }
 
 }
