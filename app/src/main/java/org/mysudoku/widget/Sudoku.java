@@ -369,7 +369,7 @@ public class Sudoku extends View {
     }
 
     public void restartLevel() {
-        loadGameLevel(currentLevel);
+        loadGameLevel(currentLevel + 1);
     }
 
     public int getCurrentLevel() {

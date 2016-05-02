@@ -1,6 +1,7 @@
 package org.mysudoku.activity;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -30,6 +31,7 @@ public class GameActivity extends BaseActivity implements StateChangedListener,
     private View lastBtn;
     private Button selectLevelBtn;
     private Button restartBtn;
+    private Button exitBtn;
     private Button btn1;
     private Button btn2;
     private Button btn3;
@@ -66,6 +68,7 @@ public class GameActivity extends BaseActivity implements StateChangedListener,
         view_sudoku = (Sudoku) findViewById(R.id.view_sudoku);
         selectLevelBtn = (Button) findViewById(R.id.btn_select_level);
         restartBtn = (Button) findViewById(R.id.btn_restartLv);
+        exitBtn = (Button) findViewById(R.id.btn_exit);
         btn1 = (Button) findViewById(R.id.btn_1);
         btn2 = (Button) findViewById(R.id.btn_2);
         btn3 = (Button) findViewById(R.id.btn_3);
@@ -85,6 +88,7 @@ public class GameActivity extends BaseActivity implements StateChangedListener,
         view_sudoku.setLevelPassedListener(this);
         selectLevelBtn.setOnClickListener(this);
         restartBtn.setOnClickListener(this);
+        exitBtn.setOnClickListener(this);
         btn1.setOnClickListener(this);
         btn2.setOnClickListener(this);
         btn3.setOnClickListener(this);
@@ -159,6 +163,9 @@ public class GameActivity extends BaseActivity implements StateChangedListener,
                 break;
             case R.id.btn_restartLv:
                 view_sudoku.restartLevel();
+                break;
+            case R.id.btn_exit:
+                finish();
                 break;
             case R.id.btn_1:
                 view_sudoku.setCurrentState(view_sudoku.STATE_1);
@@ -304,7 +311,8 @@ public class GameActivity extends BaseActivity implements StateChangedListener,
     }
 
     @Override
-    public void onNameSet(String name) {
+    public void onNameSet(String name, Dialog dialog) {
         saveRecord();
+        dialog.dismiss();
     }
 }

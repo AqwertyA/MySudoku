@@ -1,6 +1,6 @@
 package org.mysudoku.activity;
 
-import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +12,6 @@ import org.mysudoku.R;
 import org.mysudoku.app.SudokuApp;
 import org.mysudoku.widget.EnterUserNameDialog;
 import org.mysudoku.widget.SelectLevelDialog;
-import org.w3c.dom.Text;
 
 /**
  * 主界面Activity
@@ -32,7 +31,7 @@ public class MainActivity extends BaseActivity implements DialogInterface.OnClic
 
     @Override
     protected void initData() {
-        welcome.setText("Sudoku欢迎！");
+        welcome.setText(getResources().getString(R.string.welcome));
     }
 
     @Override
@@ -52,7 +51,6 @@ public class MainActivity extends BaseActivity implements DialogInterface.OnClic
     public void exitGame(View v) {
         showExitDialog(this);
     }
-
 
 
     public void aboutMe(View v) {
@@ -103,7 +101,8 @@ public class MainActivity extends BaseActivity implements DialogInterface.OnClic
     }
 
     @Override
-    public void onNameSet(String name) {
-        welcome.setText(SudokuApp.getUserName() + " 欢迎！");
+    public void onNameSet(String name, Dialog dialog) {
+        welcome.setText(String.format(getResources().getString(R.string.nick_name), SudokuApp.getUserName()));
+        dialog.dismiss();
     }
 }

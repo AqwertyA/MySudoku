@@ -27,4 +27,7 @@
     <string name="level_no_data">第%d关：无数据</string>
     <string name="enter_your_name">请输入你的名字</string>
     <string name="enter_name">输入姓名</string>
+    <string name="exit">退出</string>
+    <string name="nick_name">昵称: %s</string>
+    <string name="welcome">欢迎来到Sudoku</string>
 </resources>

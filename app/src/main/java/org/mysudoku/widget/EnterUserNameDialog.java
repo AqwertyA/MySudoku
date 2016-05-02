@@ -1,6 +1,7 @@
 package org.mysudoku.widget;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.view.View;
 import android.widget.Button;
@@ -40,7 +41,7 @@ public class EnterUserNameDialog extends AlertDialog implements View.OnClickList
                 }
                 SudokuApp.setUserName(name);
                 if (listener != null) {
-                    listener.onNameSet(name);
+                    listener.onNameSet(name, this);
                 }
                 break;
         }
@@ -51,7 +52,7 @@ public class EnterUserNameDialog extends AlertDialog implements View.OnClickList
     }
 
     public interface OnNameSetListener {
-        void onNameSet(String name);
+        void onNameSet(String name, Dialog dialog);
     }
 
 }
