@@ -20,7 +20,7 @@ import org.mysudoku.widget.SelectLevelDialog;
  */
 public class MainActivity extends BaseActivity implements DialogInterface.OnClickListener, SelectLevelDialog.LevelSelectedListener, EnterUserNameDialog.OnNameSetListener {
 
-    private TextView welcome;
+    private TextView nickNameTv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +31,7 @@ public class MainActivity extends BaseActivity implements DialogInterface.OnClic
 
     @Override
     protected void initData() {
-        welcome.setText(getResources().getString(R.string.welcome));
+        nickNameTv.setText(String.format(getResources().getString(R.string.nick_name), "unknown"));
     }
 
     @Override
@@ -40,7 +40,7 @@ public class MainActivity extends BaseActivity implements DialogInterface.OnClic
 
     @Override
     protected void initView() {
-        welcome = (TextView) findViewById(R.id.tv_welcome);
+        nickNameTv = (TextView) findViewById(R.id.tv_nick_name);
 
     }
 
@@ -102,7 +102,7 @@ public class MainActivity extends BaseActivity implements DialogInterface.OnClic
 
     @Override
     public void onNameSet(String name, Dialog dialog) {
-        welcome.setText(String.format(getResources().getString(R.string.nick_name), SudokuApp.getUserName()));
+        nickNameTv.setText(String.format(getResources().getString(R.string.nick_name), SudokuApp.getUserName()));
         dialog.dismiss();
     }
 }

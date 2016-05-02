@@ -34,7 +34,7 @@ public class SudokuApp extends Application {
     }
 
     private void initLevels() {
-        String json = Utils.getFromRaw(R.raw.levels_debug);
+        String json = Utils.getFromRaw(R.raw.levels);
         levels = Levels.parse(json);
     }
 
