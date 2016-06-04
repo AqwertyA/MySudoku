@@ -51,7 +51,7 @@ public class RankListActivity extends BaseActivity implements View.OnClickListen
     protected void initData() {
         adapter = new RankListAdapter(this, getData());
         listView.setAdapter(adapter);
-        emptyView.setText(String.format(getString(R.string.level_no_data), adapter.getCurrentLevel()));
+        emptyView.setText(String.format(getString(R.string.level_no_data), adapter.getCurrentLevel() + 1));
         listView.setEmptyView(emptyView);
         formatTitle = getString(R.string.app_name) + ": 第%s关";
         setTitle(String.format(formatTitle, adapter.getCurrentLevel() + 1));
