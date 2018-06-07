@@ -169,7 +169,9 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, widthMeasureSpec);
+        int width, height;
+        width = height = getDefaultSize(getSuggestedMinimumWidth(), widthMeasureSpec);
+        setMeasuredDimension(width, height);
         mHeight = getMeasuredHeight();
         mWidth = getMeasuredWidth();
         blockWidth = (float) mWidth / 9;
@@ -182,9 +184,8 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
 
     /**
      * 画出数独的网格，十条竖线十条横线，并且每三格的分割线用粗画笔画
-     *
-     * @param canvas
      */
+    @SuppressWarnings("SuspiciousNameCombination")
     private void drawGrid(Canvas canvas) {
         for (int i = 0; i <= 9; i++) {
             float startX = blockWidth * i;
@@ -204,8 +205,6 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
 
     /**
      * 画出数字的方法，
-     *
-     * @param canvas
      */
     private void drawText(Canvas canvas) {
         // TODO 这样算逻辑上有点不对 但结果显示还可以
@@ -231,13 +230,9 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
 
     /**
      * 设置给定坐标的数字
-     *
-     * @param xPos
-     * @param yPos
-     * @param text
      */
     private void setTextInPosition(int xPos, int yPos, String text) {
-        // 判断如果该位置在unChangableList中存在则不可修改
+        // 判断如果该位置在unchangeableList中存在则不可修改
         if (isLevelData(xPos, yPos)) {
             System.out.println("关卡数据不可修改");
             //Toast.makeText(context, "关卡数据不可修改", Toast.LENGTH_SHORT).show();
@@ -252,18 +247,13 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
     /**
      * 在{@link Sudoku#setTextInPosition(int, int, String)}
      * 方法之后使用，用于判断输入的数字是否合法，以及填入该数字之后是否填满，填满则判断游戏结束，弹出对话框做下一步操作
-     *
-     * @param yPos
-     * @param xPos
      */
     private void judge(int xPos, int yPos) {
         // 判断数字在横竖和方格内是否有重复，以及游戏是否胜利
         // 如果当前格子为空，那么肯定没有游戏结束，也不用判断重复，所以直接return（执行删除操作后当前格子为""空字符）
         if (numText[xPos][yPos].equals("")) {
             System.out.println("空字符");
-            return;
-            // else就是不为空，然后在判断重复
-        } else if (isRepeat(xPos, yPos)) {
+        } else if (isRepeat(xPos, yPos)) { // else就是不为空，然后在判断重复
             Toast.makeText(context, "有重复，请检查", Toast.LENGTH_SHORT).show();
             setTextInPosition(xPos, yPos, "");
             // 没有重复也不为空，那么这个数字就被填进去了，这时还要判断是否已经填满，若填满则游戏结束
@@ -284,13 +274,10 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
                 // TODO 游戏过关了，弹出一个对话框下一关，或者返回主菜单，等。
 
                 // 这个地方就简单点，弹出Toast提示过关并载入下一关
-                Toast.makeText(context,
-                        "Congratulations! You win the game!过关！~",
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "Congratulations! You win the game!过关！~", Toast.LENGTH_LONG).show();
                 if (currentLevel == Level.getLevelNum() - 1) {
                     // gameOver，完成了所有关卡，
-                    Toast.makeText(context, "You passed all levels!通关~",
-                            Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "You passed all levels!通关~", Toast.LENGTH_LONG).show();
                     new AlertDialog.Builder(getContext())
                             .setTitle("恭喜通关")
                             .setNegativeButton("确定", this)
@@ -310,8 +297,6 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
     /**
      * 判断指定坐标的数字是否和其他的数字有重复的
      *
-     * @param xPos
-     * @param yPos
      * @return 如果有重复返回true，否则false
      */
     private boolean isRepeat(int xPos, int yPos) {
@@ -343,8 +328,6 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
 
     /**
      * 加载一个关卡时调用此方法， 将所有的数字重新设置一遍。
-     *
-     * @param level
      */
     public void loadGameLevel(int level) {
         currentLevel = level;
@@ -362,27 +345,25 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
 
     /**
      * 设置关卡，可用于跳关等操作
-     *
-     * @param level
      */
     public void setCurrentLevel(int level) {
         currentLevel = level;
     }
 
-    @Override
     /**
      * onDraw方法，绘制网格和数字
      */
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         drawGrid(canvas);
         drawText(canvas);
     }
 
-    @Override
     /**
      * 触摸事件处理方法，只需要写按下动作触发时的逻辑
      */
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (gameState != GAME_STATE_RUNNING) {
             return false;
@@ -424,6 +405,8 @@ public class Sudoku extends View implements DialogInterface.OnClickListener {
                     default:
                         break;
                 }
+                break;
+            case MotionEvent.ACTION_UP:
                 break;
             default:
                 break;

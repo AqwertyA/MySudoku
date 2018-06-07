@@ -14,17 +14,12 @@ public class Level {
 
     /**
      * 返回一个指定关卡的copy.
-     *
-     * @param level
-     * @return
      */
     public static String[][] getLevel(int level) {
         String[][] lv = levels.get(level);
         String[][] l = new String[9][9];
         for (int i = 0; i < lv.length; i++) {
-            for (int j = 0; j < lv[i].length; j++) {
-                l[i][j] = lv[i][j];
-            }
+            System.arraycopy(lv[i], 0, l[i], 0, lv[i].length);
         }
         return l;
     }

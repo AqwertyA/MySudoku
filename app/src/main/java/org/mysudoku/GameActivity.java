@@ -17,7 +17,7 @@ public class GameActivity extends Activity implements StateChangedListener {
     }
 
     private void initView() {
-        view_sudoku = (Sudoku) findViewById(R.id.view_sudoku);
+        view_sudoku = findViewById(R.id.view_sudoku);
         view_sudoku.setStateChangedListener(this);
     }
 
@@ -70,8 +70,6 @@ public class GameActivity extends Activity implements StateChangedListener {
 
     /**
      * 为了增强用户体验，在点击某个Btn之后将其状态改变一下表示是当前这个按钮所代表的状态
-     *
-     * @param v
      */
     private void changeBtnState(View v) {
         v.setEnabled(false);
@@ -81,9 +79,6 @@ public class GameActivity extends Activity implements StateChangedListener {
         lastBtn = v;
     }
 
-    /**
-     * @param currentState
-     */
     @Override
     public void onStateChanged(int currentState) {
         if (currentState == view_sudoku.STATE_NONE && lastBtn != null) {
